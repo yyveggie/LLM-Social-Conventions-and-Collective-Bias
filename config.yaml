@@ -113,22 +113,22 @@ api:
       type: openai_compatible
       model: "meta-llama/llama-3.1-70b-instruct"
       api_key: ""
-      base_url: "https://openrouter.ai/api/v1"
+      base_url: ""
     together:
       type: openai_compatible
       model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
       api_key: ""
-      base_url: "https://api.together.xyz/v1"
+      base_url: ""
     groq:
       type: openai_compatible
       model: "llama-3.1-70b-versatile"
       api_key: ""
-      base_url: "https://api.groq.com/openai/v1"
+      base_url: ""
     mistral:
       type: openai_compatible
       model: "mistral-large-latest"
       api_key: ""
-      base_url: "https://api.mistral.ai/v1"
+      base_url: ""
     anthropic:
       type: anthropic
       model: "claude-3-5-sonnet-20241022"
