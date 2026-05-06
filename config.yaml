@@ -1,0 +1,142 @@
+# 群体交互网络设置。
+network:
+  # complete 表示全连接网络；其他网络类型由 author_code/utils.py 支持。
+  network_type: 'complete'
+  degree: 4
+  alpha: 0.41
+  beta: 0.54
+  erdos_p: 0.5
+
+# 坚定少数派实验设置；只在 experiments.committed_minority 为 True 时使用。
+minority:
+  minority_size_set: [0]
+
+# 各实验共享的核心参数。
+params:
+  # LLM 采样温度。
+  temperature: 0.5
+  # 群体实验重复次数；不控制 individual_bias 的重复次数。
+  runs: 10
+  # committed_minority 或继续演化时的最大交互次数。
+  total_interactions: 1000
+  # 群体中的 agent 数量。
+  N: 24
+  # 初始状态。
+  # - 跑 collective_convergence 时保持 'None'，表示从空白群体开始生成 baseline。
+  # - 跑 committed_minority 时必须改成 baseline run 编号，例如 0；不能为 'None'。
+  initial: 'None'
+  # 判定收敛时检查最近多少次交互。
+  convergence_time: 72
+  # 最近 convergence_time 次交互的成功率达到该阈值时认为收敛。
+  convergence_threshold: 1
+  # 每组实验的收益设置：[不匹配惩罚, 匹配奖励]。
+  rewards_set: [[-50, 100]]
+  # agent prompt 中保留的历史记忆长度。
+  memory_size_set: [5]
+  # 可选择的 convention 标签；Q 和 M 只是无语义符号。
+  options_set: [['Q', 'M']]
+
+# 运行模式设置。
+sim:
+  # committed_minority 中加入坚定少数派的方式：swap 或 inject。
+  version: 'swap'
+  # api 表示调用远程 LLM API；gpu 表示使用原作者本地 HuggingFace 模型代码。
+  mode: 'api'
+
+# 实验类型开关；python runner.py 只会运行显式设为 True 的实验。
+experiments:
+  # 单个 LLM agent 的偏好测试。
+  individual_bias: False
+  # 多个 LLM agents 互动并形成共同 convention 的实验。
+  # committed_minority 依赖它先生成 baseline .pkl。
+  collective_convergence: True
+  # 坚定少数派推动群体 convention 改变的实验。
+  # 不能直接从空白运行；必须先跑 collective_convergence，并把 params.initial 改成 baseline run 编号。
+  committed_minority: False
+  # individual_bias 中重复询问单个 agent 的次数；该值越大 API 调用越多。
+  individual_repeats: 20
+
+# 输出命名设置。
+model:
+  # 只用于输出 .pkl 文件名前缀，例如 data/kimi_*.pkl。
+  shorthand: "kimi"
+
+# 实时日志设置；用于中途停止实验后仍能查看已经发生的 API 调用。
+logging:
+  # True 表示每次 API 调用都会追加写入 logs/*.jsonl。
+  enabled: True
+  # 日志目录。
+  dir: "logs"
+  # 是否保存完整 prompt；为复核实验建议保持 True。
+  save_prompts: True
+  # 是否保存 API 原始响应；为复核模型输出建议保持 True。
+  save_raw_responses: True
+
+# 远程 LLM API 设置；sim.mode 为 api 时使用。
+api:
+  # 当前启用的 provider 名称，必须存在于 providers 下。
+  active_provider: kimi
+
+  # API 请求的默认重试与超时设置。
+  request:
+    timeout_seconds: 120
+    retry_sleep_seconds: 2.5
+    rate_limit_sleep_seconds: 450
+    max_retries: 100
+
+  # 可选 provider 列表；实际只调用 active_provider 指定的那一个。
+  providers:
+    huggingface:
+      type: huggingface
+      model: "meta-llama/Meta-Llama-3.1-70B-Instruct"
+      api_key: ""
+      base_url: "https://api-inference.huggingface.co/models"
+      top_k: 10
+    openai:
+      type: openai_compatible
+      model: "gpt-4o-mini"
+      api_key: ""
+      base_url: "https://api.openai.com/v1"
+    deepseek:
+      type: openai_compatible
+      model: "deepseek-chat"
+      api_key: ""
+      base_url: "https://api.deepseek.com/v1"
+    kimi:
+      type: openai_compatible
+      model: "kimi-k2-turbo-preview"
+      api_key: ""
+      base_url: "https://api.moonshot.cn/v1"
+      timeout_seconds: 60
+      max_concurrency: 50
+    openrouter:
+      type: openai_compatible
+      model: "meta-llama/llama-3.1-70b-instruct"
+      api_key: ""
+      base_url: "https://openrouter.ai/api/v1"
+    together:
+      type: openai_compatible
+      model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
+      api_key: ""
+      base_url: "https://api.together.xyz/v1"
+    groq:
+      type: openai_compatible
+      model: "llama-3.1-70b-versatile"
+      api_key: ""
+      base_url: "https://api.groq.com/openai/v1"
+    mistral:
+      type: openai_compatible
+      model: "mistral-large-latest"
+      api_key: ""
+      base_url: "https://api.mistral.ai/v1"
+    anthropic:
+      type: anthropic
+      model: "claude-3-5-sonnet-20241022"
+      api_key: ""
+      base_url: "https://api.anthropic.com/v1"
+      anthropic_version: "2023-06-01"
+    gemini:
+      type: gemini
+      model: "gemini-1.5-pro"
+      api_key: ""
+      base_url: "https://generativelanguage.googleapis.com/v1beta"

@@ -1,0 +1,34 @@
+# 系统文件
+.DS_Store
+
+# Python 缓存
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# 本地虚拟环境
+.venv/
+venv/
+env/
+
+# 敏感配置与运行日志
+logs/*.jsonl
+logs/*.log
+*.key
+*.pem
+.env
+.env.*
+
+# 实验输出数据
+*.pkl
+temporary_*
+
+# 大型论文资料；如需共享请单独说明来源与版权
+papers/*.pdf
+
+# Notebook 自动检查点
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
