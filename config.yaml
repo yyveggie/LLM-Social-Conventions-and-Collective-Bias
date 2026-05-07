@@ -1,90 +1,101 @@
 # 群体交互网络设置。
+# 【原论文复现参数】一般不需要改；除非你要专门研究网络结构变化。
 network:
-  # complete 表示全连接网络；其他网络类型由 author_code/utils.py 支持。
+  # 【原论文复现参数】complete 表示全连接网络；复现主实验时保持 complete。
   network_type: 'complete'
+  # 【原论文扩展参数】非 complete 网络才可能用到；主实验通常不用调。
   degree: 4
+  # 【原论文扩展参数】非 complete 网络才可能用到；主实验通常不用调。
   alpha: 0.41
+  # 【原论文扩展参数】非 complete 网络才可能用到；主实验通常不用调。
   beta: 0.54
+  # 【原论文扩展参数】Erdos-Renyi 网络才可能用到；主实验通常不用调。
   erdos_p: 0.5
 
 # 坚定少数派实验设置；只在 experiments.committed_minority 为 True 时使用。
 minority:
+  # 【按实验目标调整】坚定少数派数量；复现不同 critical mass 条件时才改。
   minority_size_set: [0]
 
 # 各实验共享的核心参数。
 params:
-  # LLM 采样温度。
+  # 【原论文复现参数】LLM 采样温度；复现主实验时建议保持 0.5。
   temperature: 0.5
-  # 群体实验重复次数；不控制 individual_bias 的重复次数。
+  # 【按成本调整】群体实验重复次数；越大越稳定但 API 成本越高；不控制 individual_bias。
   runs: 10
-  # committed_minority 或继续演化时的最大交互次数。
+  # 【原论文复现参数】committed_minority 或继续演化时的最大交互次数；通常不需要改。
   total_interactions: 1000
-  # 群体中的 agent 数量。
+  # 【原论文复现参数】群体中的 agent 数量；复现主实验时保持 24。
   N: 24
   # 初始状态。
   # - 跑 collective_convergence 时保持 'None'，表示从空白群体开始生成 baseline。
   # - 跑 committed_minority 时必须改成 baseline run 编号，例如 0；不能为 'None'。
   initial: 'None'
-  # 判定收敛时检查最近多少次交互。
+  # 【原论文复现参数】判定收敛时检查最近多少次交互；通常不需要改。
   convergence_time: 72
-  # 最近 convergence_time 次交互的成功率达到该阈值时认为收敛。
+  # 【原论文复现参数】最近 convergence_time 次交互的成功率达到该阈值时认为收敛；通常不需要改。
   convergence_threshold: 1
-  # 每组实验的收益设置：[不匹配惩罚, 匹配奖励]。
+  # 【原论文复现参数】每组实验的收益设置：[不匹配惩罚, 匹配奖励]；通常保持 [-50, 100]。
   rewards_set: [[-50, 100]]
-  # agent prompt 中保留的历史记忆长度。
+  # 【原论文复现参数】agent prompt 中保留的历史记忆长度；复现主实验时保持 5。
   memory_size_set: [5]
-  # 可选择的 convention 标签；Q 和 M 只是无语义符号。
+  # 【按实验目标调整】可选择的 convention 标签；Q 和 M 只是无语义符号。
   options_set: [['Q', 'M']]
 
 # 运行模式设置。
 sim:
-  # committed_minority 中加入坚定少数派的方式：swap 或 inject。
+  # 【原论文复现参数】committed_minority 中加入坚定少数派的方式；复现主实验时保持 swap。
   version: 'swap'
-  # api 表示调用远程 LLM API；gpu 表示使用原作者本地 HuggingFace 模型代码。
+  # 【当前项目运行方式】api 表示调用远程 LLM API；gpu 是原作者本地 HuggingFace 模型代码。
   mode: 'api'
 
 # 实验类型开关；python runner.py 只会运行显式设为 True 的实验。
 experiments:
-  # 单个 LLM agent 的偏好测试。
+  # 【常改】单个 LLM agent 的偏好测试。
   individual_bias: False
-  # 多个 LLM agents 互动并形成共同 convention 的实验。
+  # 【常改】多个 LLM agents 互动并形成共同 convention 的实验。
   # committed_minority 依赖它先生成 baseline .pkl。
   collective_convergence: True
-  # 坚定少数派推动群体 convention 改变的实验。
+  # 【常改】坚定少数派推动群体 convention 改变的实验。
   # 不能直接从空白运行；必须先跑 collective_convergence，并把 params.initial 改成 baseline run 编号。
   committed_minority: False
-  # individual_bias 中重复询问单个 agent 的次数；该值越大 API 调用越多。
+  # 【按成本调整】individual_bias 中重复询问单个 agent 的次数；该值越大 API 调用越多。
   individual_repeats: 20
 
 # 输出命名设置。
 model:
-  # 只用于输出 .pkl 文件名前缀，例如 data/kimi_*.pkl。
+  # 【常改】只用于输出 .pkl 文件名前缀，例如 data/kimi_*.pkl；建议和 active_provider 保持一致。
   shorthand: "kimi"
 
 # 实时日志设置；用于中途停止实验后仍能查看已经发生的 API 调用。
 logging:
-  # True 表示每次 API 调用都会追加写入 logs/*.jsonl。
+  # 【常改】True 表示每次 API 调用都会追加写入 logs/*.jsonl。
   enabled: True
-  # 日志目录。
+  # 【通常不需要改】日志目录。
   dir: "logs"
-  # 是否保存完整 prompt；为复核实验建议保持 True。
+  # 【建议保持 True】是否保存完整 prompt；用于复核实验。
   save_prompts: True
-  # 是否保存 API 原始响应；为复核模型输出建议保持 True。
+  # 【建议保持 True】是否保存 API 原始响应；用于复核模型输出。
   save_raw_responses: True
 
 # 远程 LLM API 设置；sim.mode 为 api 时使用。
 api:
-  # 当前启用的 provider 名称，必须存在于 providers 下。
+  # 【常改】当前启用的 provider 名称，必须存在于 providers 下。
   active_provider: kimi
 
   # API 请求的默认重试与超时设置。
   request:
+    # 【按网络情况调整】单次请求超时时间。
     timeout_seconds: 120
+    # 【通常不需要改】普通错误后的等待时间。
     retry_sleep_seconds: 2.5
+    # 【按 provider 限流调整】遇到 rate limit 后等待多久。
     rate_limit_sleep_seconds: 450
+    # 【按稳定性调整】最大重试次数；过大可能导致长时间等待。
     max_retries: 100
 
   # 可选 provider 列表；实际只调用 active_provider 指定的那一个。
+  # 【常改】通常只需要填写你要用的 provider 的 api_key、model、base_url。
   providers:
     huggingface:
       type: huggingface
