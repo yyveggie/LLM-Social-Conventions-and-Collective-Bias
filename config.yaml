@@ -1,3 +1,9 @@
+# 配置标记说明：
+# - 【原论文复现参数】：来自原论文/原作者实验设定，复现主实验时通常保持不变。
+# - 【原论文扩展参数】：原作者代码支持，但主复现实验通常用不到。
+# - 【按实验目标调整】：根据你要跑的实验场景修改。
+# - 【当前项目运行方式】：本项目为接入远程 LLM API 新增/整理的配置，不属于原论文固定参数。
+
 # 群体交互网络设置。
 # 【原论文复现参数】一般不需要改；除非你要专门研究网络结构变化。
 network:
@@ -27,7 +33,7 @@ params:
   total_interactions: 1000
   # 【原论文复现参数】群体中的 agent 数量；复现主实验时保持 24。
   N: 24
-  # 初始状态。
+  # 【按实验流程调整】初始状态。
   # - 跑 collective_convergence 时保持 'None'，表示从空白群体开始生成 baseline。
   # - 跑 committed_minority 时必须改成 baseline run 编号，例如 0；不能为 'None'。
   initial: 'None'
@@ -63,11 +69,13 @@ experiments:
   individual_repeats: 20
 
 # 输出命名设置。
+# 【当前项目运行方式】不影响实验机制，只影响输出文件名。
 model:
   # 【常改】只用于输出 .pkl 文件名前缀，例如 data/kimi_*.pkl；建议和 active_provider 保持一致。
   shorthand: "kimi"
 
 # 实时日志设置；用于中途停止实验后仍能查看已经发生的 API 调用。
+# 【当前项目运行方式】这是为了远程 API 实验可追踪而新增的配置，不属于原论文固定参数。
 logging:
   # 【常改】True 表示每次 API 调用都会追加写入 logs/*.jsonl。
   enabled: True
@@ -79,6 +87,7 @@ logging:
   save_raw_responses: True
 
 # 远程 LLM API 设置；sim.mode 为 api 时使用。
+# 【当前项目运行方式】这是本项目新增的远程模型配置区，不属于原论文固定参数。
 api:
   # 【常改】当前启用的 provider 名称，必须存在于 providers 下。
   active_provider: kimi
@@ -98,22 +107,26 @@ api:
   # 【常改】通常只需要填写你要用的 provider 的 api_key、model、base_url。
   providers:
     huggingface:
+      # 【可选 provider】原作者本地模型近似对应的 HuggingFace 接口；不用它时不用填。
       type: huggingface
       model: "meta-llama/Meta-Llama-3.1-70B-Instruct"
       api_key: ""
       base_url: "https://api-inference.huggingface.co/models"
       top_k: 10
     openai:
+      # 【可选 provider】OpenAI 兼容接口；不用它时不用填。
       type: openai_compatible
       model: "gpt-4o-mini"
       api_key: ""
       base_url: "https://api.openai.com/v1"
     deepseek:
+      # 【可选 provider】DeepSeek 接口；不用它时不用填。
       type: openai_compatible
       model: "deepseek-chat"
       api_key: ""
       base_url: "https://api.deepseek.com/v1"
     kimi:
+      # 【当前启用 provider】当前 active_provider 指向 kimi，因此需要在这里填写 api_key。
       type: openai_compatible
       model: "kimi-k2-turbo-preview"
       api_key: ""
@@ -121,32 +134,38 @@ api:
       timeout_seconds: 60
       max_concurrency: 50
     openrouter:
+      # 【可选 provider】OpenRouter 接口；不用它时不用填。
       type: openai_compatible
       model: "meta-llama/llama-3.1-70b-instruct"
       api_key: ""
       base_url: ""
     together:
+      # 【可选 provider】Together AI 接口；不用它时不用填。
       type: openai_compatible
       model: "meta-llama/Meta-Llama-3.1-70B-Instruct-Turbo"
       api_key: ""
       base_url: ""
     groq:
+      # 【可选 provider】Groq 接口；不用它时不用填。
       type: openai_compatible
       model: "llama-3.1-70b-versatile"
       api_key: ""
       base_url: ""
     mistral:
+      # 【可选 provider】Mistral 接口；不用它时不用填。
       type: openai_compatible
       model: "mistral-large-latest"
       api_key: ""
       base_url: ""
     anthropic:
+      # 【可选 provider】Anthropic Claude 接口；不用它时不用填。
       type: anthropic
       model: "claude-3-5-sonnet-20241022"
       api_key: ""
       base_url: "https://api.anthropic.com/v1"
       anthropic_version: "2023-06-01"
     gemini:
+      # 【可选 provider】Google Gemini 接口；不用它时不用填。
       type: gemini
       model: "gemini-1.5-pro"
       api_key: ""
